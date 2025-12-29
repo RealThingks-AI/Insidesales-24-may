@@ -763,7 +763,9 @@ const UserDashboard = () => {
           <Card className="h-full hover:shadow-lg transition-shadow animate-fade-in overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
               <CardTitle className="text-sm font-medium">My Leads</CardTitle>
-              <FileText className="w-4 h-4 text-blue-600" />
+              <Button variant="outline" size="sm" className="h-6 text-xs gap-1" onClick={() => !isResizeMode && setLeadModalOpen(true)}>
+                <Plus className="w-3 h-3" /> Add Lead
+              </Button>
             </CardHeader>
             <CardContent className="px-3 pb-3 pt-0">
               <div className="grid grid-cols-2 gap-1.5">
