@@ -1,122 +1,164 @@
-import { Users, DollarSign, TrendingUp, Activity } from "lucide-react";
-import { MetricCard } from "@/components/MetricCard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import YearlyRevenueSummary from "@/components/YearlyRevenueSummary";
+import UserDashboard from "@/components/dashboard/UserDashboard";
+import { useUserRole } from "@/hooks/useUserRole";
+import { NotificationBell } from "@/components/NotificationBell";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useEffect } from "react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { BarChart3, LayoutDashboard } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function Dashboard() {
-  const recentActivities = [
-    { id: 1, type: "contact", name: "John Smith", action: "New contact added", time: "2 hours ago" },
-    { id: 2, type: "deal", name: "Enterprise Deal", action: "Moved to negotiation", time: "5 hours ago" },
-    { id: 3, type: "contact", name: "Sarah Johnson", action: "Updated contact info", time: "1 day ago" },
-    { id: 4, type: "deal", name: "Startup Package", action: "Deal closed - Won", time: "2 days ago" },
-  ];
+type DashboardView = "analytics" | "overview";
 
+const Dashboard = () => {
+  const { isAdmin, loading } = useUserRole();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  
+  const availableYears = [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
+  const currentYear = new Date().getFullYear();
+  const defaultYear = availableYears.includes(currentYear) ? currentYear : 2025;
+  const [selectedYear, setSelectedYear] = useState(defaultYear);
+
+  // Fetch admin's dashboard preference
+  const { data: dashboardPreference, isLoading: prefLoading } = useQuery({
+    queryKey: ['dashboard-preference', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('dashboard_preferences')
+        .select('layout_view')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return (data?.layout_view as DashboardView) || 'overview';
+    },
+    enabled: !!user?.id && isAdmin,
+  });
+
+  const [currentView, setCurrentView] = useState<DashboardView>("overview");
+
+  // Update local state when preference is loaded
+  useEffect(() => {
+    if (dashboardPreference) {
+      setCurrentView(dashboardPreference);
+    }
+  }, [dashboardPreference]);
+
+  // Mutation to save dashboard preference
+  const savePreferenceMutation = useMutation({
+    mutationFn: async (view: DashboardView) => {
+      if (!user?.id) return;
+      const { error } = await supabase
+        .from('dashboard_preferences')
+        .upsert({
+          user_id: user.id,
+          layout_view: view,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard-preference', user?.id] });
+    },
+  });
+
+  const handleViewChange = (value: string) => {
+    if (value && (value === "analytics" || value === "overview")) {
+      setCurrentView(value);
+      savePreferenceMutation.mutate(value);
+    }
+  };
+
+  if (loading || (isAdmin && prefLoading)) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="h-8 w-64 rounded-md skeleton-shimmer" />
+          <div className="h-9 w-24 rounded-md skeleton-shimmer" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="h-32 rounded-lg skeleton-shimmer" style={{ animationDelay: `${i * 0.1}s` }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Non-admin users only see UserDashboard
+  if (!isAdmin) {
+    return <UserDashboard />;
+  }
+
+  // Admin users can toggle between views
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Welcome back! Here's your business overview.</p>
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
+      {/* Fixed Header */}
+      <div className="flex-shrink-0 bg-background">
+        <div className="px-6 h-16 flex items-center border-b w-full">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-4">
+              <ToggleGroup 
+                type="single" 
+                value={currentView} 
+                onValueChange={handleViewChange}
+                className="bg-muted/60 border border-border rounded-lg p-1"
+              >
+                <ToggleGroupItem 
+                  value="overview" 
+                  aria-label="Dashboard Overview"
+                  className="px-3 py-1.5 text-sm data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:shadow-sm data-[state=off]:text-muted-foreground"
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
+                </ToggleGroupItem>
+                <ToggleGroupItem 
+                  value="analytics" 
+                  aria-label="Revenue Analytics"
+                  className="px-3 py-1.5 text-sm data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:shadow-sm data-[state=off]:text-muted-foreground"
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Revenue Analytics
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+            <div className="flex items-center gap-4">
+              <NotificationBell placement="down" size="small" />
+              {currentView === "analytics" && (
+                <Select value={selectedYear.toString()} onValueChange={value => setSelectedYear(parseInt(value))}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableYears.map(year => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Total Contacts"
-          value="2,543"
-          icon={Users}
-          trend={{ value: "12% from last month", positive: true }}
-        />
-        <MetricCard
-          title="Active Deals"
-          value="48"
-          icon={TrendingUp}
-          trend={{ value: "8% from last month", positive: true }}
-        />
-        <MetricCard
-          title="Revenue"
-          value="$84,250"
-          icon={DollarSign}
-          trend={{ value: "23% from last month", positive: true }}
-        />
-        <MetricCard
-          title="Activities"
-          value="127"
-          icon={Activity}
-          trend={{ value: "3% from last month", positive: false }}
-        />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activities</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-4 pb-4 border-b last:border-0">
-                  <div className={`p-2 rounded-lg ${activity.type === 'contact' ? 'bg-primary/10' : 'bg-accent/10'}`}>
-                    {activity.type === 'contact' ? (
-                      <Users className="h-4 w-4 text-primary" />
-                    ) : (
-                      <TrendingUp className="h-4 w-4 text-accent" />
-                    )}
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <p className="font-medium text-foreground">{activity.name}</p>
-                    <p className="text-sm text-muted-foreground">{activity.action}</p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Pipeline Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Qualification</span>
-                  <span className="font-medium">18 deals</span>
-                </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-chart-1 rounded-full" style={{ width: '35%' }} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Proposal</span>
-                  <span className="font-medium">12 deals</span>
-                </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-chart-2 rounded-full" style={{ width: '45%' }} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Negotiation</span>
-                  <span className="font-medium">10 deals</span>
-                </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-chart-3 rounded-full" style={{ width: '60%' }} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Closed Won</span>
-                  <span className="font-medium">8 deals</span>
-                </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-success rounded-full" style={{ width: '80%' }} />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Main Content Area */}
+      <div className="flex-1 min-h-0 overflow-auto">
+        {currentView === "analytics" ? (
+          <div className="p-6 space-y-8">
+            <YearlyRevenueSummary selectedYear={selectedYear} />
+            <div className="border-t border-border" />
+          </div>
+        ) : (
+          <UserDashboard />
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

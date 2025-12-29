@@ -1,112 +1,213 @@
-import { useState } from "react";
-import { Search, Plus, Mail, Phone } from "lucide-react";
+import { ContactTable } from "@/components/ContactTable";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Settings, MoreVertical, Upload, Plus, Trash2, Download, Mail } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useSimpleContactsImportExport } from "@/hooks/useSimpleContactsImportExport";
+import { useCRUDAudit } from "@/hooks/useCRUDAudit";
+import { BulkEmailModal, BulkEmailRecipient } from "@/components/BulkEmailModal";
 
-interface Contact {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  company: string;
-  status: "active" | "inactive";
-}
+const Contacts = () => {
+  const { toast } = useToast();
+  const { logBulkDelete } = useCRUDAudit();
+  const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showBulkEmailModal, setShowBulkEmailModal] = useState(false);
+  const [bulkEmailRecipients, setBulkEmailRecipients] = useState<BulkEmailRecipient[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-const mockContacts: Contact[] = [
-  { id: 1, name: "John Smith", email: "john@example.com", phone: "+1 234 567 8900", company: "Tech Corp", status: "active" },
-  { id: 2, name: "Sarah Johnson", email: "sarah@example.com", phone: "+1 234 567 8901", company: "Digital Inc", status: "active" },
-  { id: 3, name: "Michael Brown", email: "michael@example.com", phone: "+1 234 567 8902", company: "StartUp Co", status: "inactive" },
-  { id: 4, name: "Emily Davis", email: "emily@example.com", phone: "+1 234 567 8903", company: "Enterprise LLC", status: "active" },
-  { id: 5, name: "David Wilson", email: "david@example.com", phone: "+1 234 567 8904", company: "Growth Ltd", status: "active" },
-];
+  const onRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
 
-export default function Contacts() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const { handleImport, handleExport, isImporting } = useSimpleContactsImportExport(onRefresh);
 
-  const filteredContacts = mockContacts.filter(
-    (contact) =>
-      contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contact.company.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+  const handleImportCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      await handleImport(file);
+      event.target.value = '';
+    } catch (error: any) {
+      console.error('Import error:', error);
+      event.target.value = '';
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedContacts.length === 0) return;
+    try {
+      const { error } = await supabase.from('contacts').delete().in('id', selectedContacts);
+      if (error) throw error;
+
+      await logBulkDelete('contacts', selectedContacts.length, selectedContacts);
+      toast({
+        title: "Success",
+        description: `${selectedContacts.length} contacts deleted successfully`
+      });
+      setSelectedContacts([]);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete contacts",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleBulkEmailClick = async () => {
+    if (selectedContacts.length === 0) return;
+    
+    const { data: contacts, error } = await supabase
+      .from('contacts')
+      .select('id, contact_name, email')
+      .in('id', selectedContacts);
+    
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch contact details",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const recipients: BulkEmailRecipient[] = (contacts || []).map(contact => ({
+      id: contact.id,
+      name: contact.contact_name,
+      email: contact.email || undefined,
+      type: 'contact' as const,
+    }));
+
+    setBulkEmailRecipients(recipients);
+    setShowBulkEmailModal(true);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Contacts</h1>
-          <p className="text-muted-foreground mt-1">Manage your customer relationships</p>
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
+      {/* Fixed Header */}
+      <div className="flex-shrink-0 bg-background">
+        <div className="px-6 h-16 flex items-center border-b w-full">
+          <div className="flex items-center justify-between w-full">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl text-foreground font-semibold">Contacts</h1>
+            </div>
+            <div className="flex items-center gap-3">
+              {selectedContacts.length > 0 && (
+                <>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" size="icon" onClick={handleBulkEmailClick}>
+                          <Mail className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Send Email to Selected ({selectedContacts.length})</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" size="icon" onClick={handleBulkDelete}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete Selected ({selectedContacts.length})</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </>
+              )}
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" disabled={isImporting}>
+                    Actions
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setShowColumnCustomizer(true)}>
+                    <Settings className="w-4 h-4 mr-2" />
+                    Columns
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleImportClick} disabled={isImporting}>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Import CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExport}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Export CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleBulkEmailClick} disabled={selectedContacts.length === 0}>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Send Bulk Email ({selectedContacts.length})
+                  </DropdownMenuItem>
+                  {selectedContacts.length > 0 && (
+                    <DropdownMenuItem onClick={handleBulkDelete} className="text-destructive focus:text-destructive">
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Selected ({selectedContacts.length})
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Button variant="outline" size="sm" onClick={() => setShowModal(true)}>
+                Add Contact
+              </Button>
+            </div>
+          </div>
         </div>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add Contact
-        </Button>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search contacts..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+      {/* Hidden file input for CSV import */}
+      <Input 
+        ref={fileInputRef} 
+        type="file" 
+        accept=".csv" 
+        onChange={handleImportCSV} 
+        className="hidden" 
+        disabled={isImporting} 
+      />
+
+      {/* Main Content Area */}
+      <div className="flex-1 min-h-0 overflow-auto p-6">
+        <ContactTable 
+          showColumnCustomizer={showColumnCustomizer} 
+          setShowColumnCustomizer={setShowColumnCustomizer} 
+          showModal={showModal} 
+          setShowModal={setShowModal} 
+          selectedContacts={selectedContacts} 
+          setSelectedContacts={setSelectedContacts} 
+          refreshTrigger={refreshTrigger} 
+        />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredContacts.map((contact) => (
-          <Card key={contact.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                    {getInitials(contact.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-2">
-                  <div>
-                    <h3 className="font-semibold text-foreground">{contact.name}</h3>
-                    <p className="text-sm text-muted-foreground">{contact.company}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-3 w-3" />
-                      <span className="truncate">{contact.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Phone className="h-3 w-3" />
-                      <span>{contact.phone}</span>
-                    </div>
-                  </div>
-                  <div className="pt-2">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        contact.status === "active"
-                          ? "bg-success/10 text-success"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {contact.status === "active" ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Bulk Email Modal */}
+      <BulkEmailModal
+        open={showBulkEmailModal}
+        onOpenChange={setShowBulkEmailModal}
+        recipients={bulkEmailRecipients}
+        onEmailsSent={() => {
+          setSelectedContacts([]);
+        }}
+      />
     </div>
   );
-}
+};
+
+export default Contacts;
