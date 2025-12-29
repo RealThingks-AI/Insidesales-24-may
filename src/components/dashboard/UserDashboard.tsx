@@ -761,39 +761,39 @@ const UserDashboard = () => {
       case "leads":
         return (
           <Card className="h-full hover:shadow-lg transition-shadow animate-fade-in">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
               <CardTitle className="text-sm font-medium">My Leads</CardTitle>
               <FileText className="w-4 h-4 text-blue-600" />
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="grid grid-cols-2 gap-2">
+            <CardContent className="px-3 pb-3 pt-0">
+              <div className="grid grid-cols-2 gap-1.5">
                 <div 
-                  className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors"
+                  className="text-center p-2 bg-blue-50 dark:bg-blue-950/20 rounded cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); navigate('/leads?status=New'); }}
                 >
-                  <p className="text-xl font-bold text-blue-600">{leadsData?.new || 0}</p>
-                  <p className="text-xs text-muted-foreground">New</p>
+                  <p className="text-lg font-bold text-blue-600">{leadsData?.new || 0}</p>
+                  <p className="text-[10px] text-muted-foreground">New</p>
                 </div>
                 <div 
-                  className="text-center p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-950/40 transition-colors"
+                  className="text-center p-2 bg-yellow-50 dark:bg-yellow-950/20 rounded cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-950/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); navigate('/leads?status=Attempted'); }}
                 >
-                  <p className="text-xl font-bold text-yellow-600">{leadsData?.attempted || 0}</p>
-                  <p className="text-xs text-muted-foreground">Attempted</p>
+                  <p className="text-lg font-bold text-yellow-600">{leadsData?.attempted || 0}</p>
+                  <p className="text-[10px] text-muted-foreground">Attempted</p>
                 </div>
                 <div 
-                  className="text-center p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-950/40 transition-colors"
+                  className="text-center p-2 bg-orange-50 dark:bg-orange-950/20 rounded cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-950/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); navigate('/leads?status=Follow-up'); }}
                 >
-                  <p className="text-xl font-bold text-orange-600">{leadsData?.followUp || 0}</p>
-                  <p className="text-xs text-muted-foreground">Follow-Up</p>
+                  <p className="text-lg font-bold text-orange-600">{leadsData?.followUp || 0}</p>
+                  <p className="text-[10px] text-muted-foreground">Follow-Up</p>
                 </div>
                 <div 
-                  className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
+                  className="text-center p-2 bg-green-50 dark:bg-green-950/20 rounded cursor-pointer hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); navigate('/leads?status=Qualified'); }}
                 >
-                  <p className="text-xl font-bold text-green-600">{leadsData?.qualified || 0}</p>
-                  <p className="text-xs text-muted-foreground">Qualified</p>
+                  <p className="text-lg font-bold text-green-600">{leadsData?.qualified || 0}</p>
+                  <p className="text-[10px] text-muted-foreground">Qualified</p>
                 </div>
               </div>
             </CardContent>
