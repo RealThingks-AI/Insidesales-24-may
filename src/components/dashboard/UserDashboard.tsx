@@ -802,18 +802,18 @@ const UserDashboard = () => {
 
       case "contacts":
         return (
-          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in" onClick={() => !isResizeMode && navigate('/contacts')}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in overflow-hidden" onClick={() => !isResizeMode && navigate('/contacts')}>
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
               <CardTitle className="text-sm font-medium">My Contacts</CardTitle>
               <Users className="w-4 h-4 text-green-600" />
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="text-2xl font-bold">{contactsData?.total || 0}</div>
-              <div className="flex flex-wrap gap-1 text-xs">
-                <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{contactsData?.withEmail || 0} w/ Email</span>
-                <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">{contactsData?.withPhone || 0} w/ Phone</span>
+            <CardContent className="px-3 pb-3 pt-0 space-y-1.5">
+              <div className="text-lg font-bold">{contactsData?.total || 0}</div>
+              <div className="flex flex-wrap gap-1 text-[10px]">
+                <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{contactsData?.withEmail || 0} w/ Email</span>
+                <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">{contactsData?.withPhone || 0} w/ Phone</span>
               </div>
-              <div className="flex gap-2 text-xs text-muted-foreground">
+              <div className="flex gap-2 text-[10px] text-muted-foreground">
                 <span>{contactsData?.prospects || 0} Prospects</span>
                 <span>•</span>
                 <span>{contactsData?.customers || 0} Customers</span>
@@ -824,42 +824,42 @@ const UserDashboard = () => {
 
       case "deals":
         return (
-          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in" onClick={() => !isResizeMode && navigate('/deals')}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in overflow-hidden" onClick={() => !isResizeMode && navigate('/deals')}>
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
               <CardTitle className="text-sm font-medium">My Deals</CardTitle>
               <Briefcase className="w-4 h-4 text-purple-600" />
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="px-3 pb-3 pt-0 space-y-1.5">
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold">{dealsData?.active || 0}</span>
-                <span className="text-sm text-muted-foreground">active</span>
+                <span className="text-lg font-bold">{dealsData?.active || 0}</span>
+                <span className="text-xs text-muted-foreground">active</span>
               </div>
-              <div className="flex flex-wrap gap-1 text-xs">
-                <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">{dealsData?.won || 0} Won</span>
-                <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">{dealsData?.lost || 0} Lost</span>
+              <div className="flex flex-wrap gap-1 text-[10px]">
+                <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">{dealsData?.won || 0} Won</span>
+                <span className="px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">{dealsData?.lost || 0} Lost</span>
               </div>
-              <p className="text-xs text-muted-foreground">Pipeline: {formatCurrency(dealsData?.totalPipeline || 0)}</p>
+              <p className="text-[10px] text-muted-foreground">Pipeline: {formatCurrency(dealsData?.totalPipeline || 0)}</p>
             </CardContent>
           </Card>
         );
 
       case "accountsSummary":
         return (
-          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in" onClick={() => !isResizeMode && navigate('/accounts')}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in overflow-hidden" onClick={() => !isResizeMode && navigate('/accounts')}>
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
               <CardTitle className="text-sm font-medium">Accounts</CardTitle>
               <Building2 className="w-4 h-4 text-indigo-600" />
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="px-3 pb-3 pt-0 space-y-1.5">
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold">{accountsData?.total || 0}</span>
+                <span className="text-lg font-bold">{accountsData?.total || 0}</span>
                 {(accountsData?.newThisMonth || 0) > 0 && (
-                  <span className="text-xs text-green-600">+{accountsData?.newThisMonth} this month</span>
+                  <span className="text-[10px] text-green-600">+{accountsData?.newThisMonth} this month</span>
                 )}
               </div>
-              <div className="flex flex-wrap gap-1 text-xs">
-                <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{accountsData?.bySegment?.prospect || 0} Prospect</span>
-                <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">{accountsData?.bySegment?.customer || 0} Customer</span>
+              <div className="flex flex-wrap gap-1 text-[10px]">
+                <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{accountsData?.bySegment?.prospect || 0} Prospect</span>
+                <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">{accountsData?.bySegment?.customer || 0} Customer</span>
               </div>
             </CardContent>
           </Card>
@@ -867,31 +867,31 @@ const UserDashboard = () => {
 
       case "actionItems":
         return (
-          <Card className="h-full animate-fade-in">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <Card className="h-full animate-fade-in overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
               <CardTitle className="text-sm font-medium">Action Items</CardTitle>
               <Clock className="w-4 h-4 text-orange-600" />
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="px-3 pb-3 pt-0 space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">{actionItemsData?.total || 0}</span>
-                <div className="flex gap-2 text-xs">
+                <span className="text-lg font-bold">{actionItemsData?.total || 0}</span>
+                <div className="flex gap-1 text-[10px]">
                   {(actionItemsData?.overdue || 0) > 0 && (
-                    <span className="px-2 py-1 rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 font-medium">
+                    <span className="px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 font-medium">
                       {actionItemsData?.overdue} overdue
                     </span>
                   )}
                   {(actionItemsData?.dueToday || 0) > 0 && (
-                    <span className="px-2 py-1 rounded bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                    <span className="px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
                       {actionItemsData?.dueToday} today
                     </span>
                   )}
                 </div>
               </div>
               {actionItemsData?.topItems && actionItemsData.topItems.length > 0 && (
-                <div className="space-y-1">
-                  {actionItemsData.topItems.slice(0, 3).map((item: any) => (
-                    <div key={item.id} className="text-xs p-2 rounded bg-muted/50 truncate">
+                <div className="space-y-0.5">
+                  {actionItemsData.topItems.slice(0, 2).map((item: any) => (
+                    <div key={item.id} className="text-[10px] p-1.5 rounded bg-muted/50 truncate">
                       {item.next_action}
                     </div>
                   ))}
@@ -903,21 +903,21 @@ const UserDashboard = () => {
 
       case "quickActions":
         return (
-          <Card className="h-full animate-fade-in">
-            <CardHeader className="pb-2">
+          <Card className="h-full animate-fade-in overflow-hidden">
+            <CardHeader className="py-2 px-3">
               <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-2">
-              <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => !isResizeMode && setLeadModalOpen(true)}>
+            <CardContent className="grid grid-cols-2 gap-1.5 px-3 pb-3 pt-0">
+              <Button variant="outline" size="sm" className="justify-start gap-1.5 h-7 text-xs" onClick={() => !isResizeMode && setLeadModalOpen(true)}>
                 <Plus className="w-3 h-3" /> Lead
               </Button>
-              <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => !isResizeMode && setContactModalOpen(true)}>
+              <Button variant="outline" size="sm" className="justify-start gap-1.5 h-7 text-xs" onClick={() => !isResizeMode && setContactModalOpen(true)}>
                 <Plus className="w-3 h-3" /> Contact
               </Button>
-              <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => !isResizeMode && setAccountModalOpen(true)}>
+              <Button variant="outline" size="sm" className="justify-start gap-1.5 h-7 text-xs" onClick={() => !isResizeMode && setAccountModalOpen(true)}>
                 <Plus className="w-3 h-3" /> Account
               </Button>
-              <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => !isResizeMode && setCreateMeetingModalOpen(true)}>
+              <Button variant="outline" size="sm" className="justify-start gap-1.5 h-7 text-xs" onClick={() => !isResizeMode && setCreateMeetingModalOpen(true)}>
                 <Plus className="w-3 h-3" /> Meeting
               </Button>
             </CardContent>
@@ -926,20 +926,20 @@ const UserDashboard = () => {
 
       case "myPipeline":
         return (
-          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in" onClick={() => !isResizeMode && navigate('/deals')}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in overflow-hidden" onClick={() => !isResizeMode && navigate('/deals')}>
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
               <CardTitle className="text-sm font-medium">My Pipeline</CardTitle>
               <TrendingUp className="w-4 h-4 text-emerald-600" />
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="text-2xl font-bold">{formatCurrency(dealsData?.totalPipeline || 0)}</div>
-              <div className="flex items-center justify-between text-xs">
+            <CardContent className="px-3 pb-3 pt-0 space-y-1.5">
+              <div className="text-lg font-bold">{formatCurrency(dealsData?.totalPipeline || 0)}</div>
+              <div className="flex items-center justify-between text-[10px]">
                 <span className="text-muted-foreground">{dealsData?.active || 0} active deals</span>
                 {(dealsData?.closingThisMonth || 0) > 0 && (
                   <span className="text-green-600 font-medium">{dealsData?.closingThisMonth} closing soon</span>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-2 text-[10px]">
                 <span className="text-green-600 font-medium">Won: {formatCurrency(dealsData?.wonValue || 0)}</span>
               </div>
             </CardContent>
@@ -949,22 +949,22 @@ const UserDashboard = () => {
       case "todaysAgenda":
         const totalAgendaItems = (todaysMeetings?.length || 0) + (todaysTasks?.length || 0) + (overdueTasks?.length || 0);
         return (
-          <Card className="h-full animate-fade-in">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <CalendarClock className="w-5 h-5 text-primary" />
+          <Card className="h-full animate-fade-in overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
+              <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
+                <CalendarClock className="w-4 h-4 text-primary" />
                 Today's Agenda
               </CardTitle>
-              <span className="text-xs text-muted-foreground">{format(new Date(), 'EEE, MMM d')}</span>
+              <span className="text-[10px] text-muted-foreground">{format(new Date(), 'EEE, MMM d')}</span>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 pb-3 pt-0">
               {totalAgendaItems > 0 ? (
-                <div className="space-y-3 max-h-[200px] overflow-y-auto">
+                <div className="space-y-1.5">
                   {(overdueTasks?.length || 0) > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-red-600 mb-1">⚠️ Overdue ({overdueTasks?.length})</p>
-                      {overdueTasks?.slice(0, 2).map((task: any) => (
-                        <div key={task.id} className="text-xs p-2 rounded bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 mb-1 truncate">
+                      <p className="text-[10px] font-medium text-red-600 mb-0.5">⚠️ Overdue ({overdueTasks?.length})</p>
+                      {overdueTasks?.slice(0, 1).map((task: any) => (
+                        <div key={task.id} className="text-[10px] p-1.5 rounded bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 truncate">
                           {task.title}
                         </div>
                       ))}
@@ -972,10 +972,10 @@ const UserDashboard = () => {
                   )}
                   {(todaysMeetings?.length || 0) > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Meetings ({todaysMeetings?.length})</p>
-                      {todaysMeetings?.slice(0, 2).map((meeting: any) => (
-                        <div key={meeting.id} className="text-xs p-2 rounded bg-blue-50 dark:bg-blue-900/20 mb-1 flex items-center gap-2">
-                          <Calendar className="w-3 h-3 text-blue-600" />
+                      <p className="text-[10px] font-medium text-muted-foreground mb-0.5">Meetings ({todaysMeetings?.length})</p>
+                      {todaysMeetings?.slice(0, 1).map((meeting: any) => (
+                        <div key={meeting.id} className="text-[10px] p-1.5 rounded bg-blue-50 dark:bg-blue-900/20 flex items-center gap-1.5">
+                          <Calendar className="w-2.5 h-2.5 text-blue-600" />
                           <span className="truncate">{meeting.subject}</span>
                           <span className="text-muted-foreground ml-auto">{format(new Date(meeting.start_time), 'HH:mm')}</span>
                         </div>
@@ -984,9 +984,9 @@ const UserDashboard = () => {
                   )}
                   {(todaysTasks?.length || 0) > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Tasks Due ({todaysTasks?.length})</p>
-                      {todaysTasks?.slice(0, 2).map((task: any) => (
-                        <div key={task.id} className="text-xs p-2 rounded bg-orange-50 dark:bg-orange-900/20 mb-1 truncate">
+                      <p className="text-[10px] font-medium text-muted-foreground mb-0.5">Tasks Due ({todaysTasks?.length})</p>
+                      {todaysTasks?.slice(0, 1).map((task: any) => (
+                        <div key={task.id} className="text-[10px] p-1.5 rounded bg-orange-50 dark:bg-orange-900/20 truncate">
                           {task.title}
                         </div>
                       ))}
@@ -1007,30 +1007,29 @@ const UserDashboard = () => {
 
       case "upcomingMeetings":
         return (
-          <Card className="h-full animate-fade-in">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
+          <Card className="h-full animate-fade-in overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
+              <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
+                <Calendar className="w-4 h-4 text-primary" />
                 Upcoming Meetings
               </CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => !isResizeMode && navigate('/meetings')}>View All</Button>
+              <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => !isResizeMode && navigate('/meetings')}>View All</Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 pb-3 pt-0">
               {upcomingMeetings && upcomingMeetings.length > 0 ? (
-                <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                  {upcomingMeetings.slice(0, 4).map((meeting: any) => (
+                <div className="space-y-1">
+                  {upcomingMeetings.slice(0, 3).map((meeting: any) => (
                     <div 
                       key={meeting.id} 
-                      className={`p-2 rounded-lg cursor-pointer transition-colors ${meeting.isToday ? 'bg-primary/10 border border-primary/20' : 'bg-muted/50 hover:bg-muted'}`}
+                      className={`p-1.5 rounded cursor-pointer transition-colors ${meeting.isToday ? 'bg-primary/10 border border-primary/20' : 'bg-muted/50 hover:bg-muted'}`}
                       onClick={() => { if (!isResizeMode) { setSelectedMeeting(meeting); setMeetingModalOpen(true); }}}
                     >
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium truncate flex-1">{meeting.subject}</p>
-                        {meeting.isToday && <span className="text-xs px-1.5 py-0.5 rounded bg-primary text-primary-foreground ml-2">Today</span>}
+                        <p className="text-xs font-medium truncate flex-1">{meeting.subject}</p>
+                        {meeting.isToday && <span className="text-[10px] px-1 py-0.5 rounded bg-primary text-primary-foreground ml-1">Today</span>}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
                         <span>{format(new Date(meeting.start_time), 'EEE, MMM d • HH:mm')}</span>
-                        {meeting.attendeeCount > 0 && <span>• {meeting.attendeeCount} attendee{meeting.attendeeCount > 1 ? 's' : ''}</span>}
                       </div>
                     </div>
                   ))}
@@ -1051,44 +1050,44 @@ const UserDashboard = () => {
 
       case "taskReminders":
         return (
-          <Card className="h-full animate-fade-in">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="w-5 h-5 text-primary" />
+          <Card className="h-full animate-fade-in overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between py-2 px-3">
+              <CardTitle className="flex items-center gap-1.5 text-sm font-medium">
+                <Bell className="w-4 h-4 text-primary" />
                 Task Reminders
               </CardTitle>
-              <div className="flex gap-1 text-xs">
+              <div className="flex gap-1 text-[10px]">
                 {(taskReminders?.overdue || 0) > 0 && (
-                  <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">{taskReminders?.overdue} overdue</span>
+                  <span className="px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">{taskReminders?.overdue} overdue</span>
                 )}
                 {(taskReminders?.highPriority || 0) > 0 && (
-                  <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">{taskReminders?.highPriority} high</span>
+                  <span className="px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">{taskReminders?.highPriority} high</span>
                 )}
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 pb-3 pt-0">
               {taskReminders?.tasks && taskReminders.tasks.length > 0 ? (
-                <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                  {taskReminders.tasks.map((task: any) => {
+                <div className="space-y-1">
+                  {taskReminders.tasks.slice(0, 3).map((task: any) => {
                     const isOverdue = task.due_date && isBefore(new Date(task.due_date), new Date());
                     const isDueToday = task.due_date && isToday(new Date(task.due_date));
                     return (
                       <div 
                         key={task.id} 
-                        className={`p-2 rounded-lg cursor-pointer transition-colors ${
+                        className={`p-1.5 rounded cursor-pointer transition-colors ${
                           isOverdue ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' :
                           isDueToday ? 'bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800' : 'bg-muted/50 hover:bg-muted'
                         }`}
                         onClick={() => { if (!isResizeMode) { setSelectedTask(task as Task); setTaskModalOpen(true); }}}
                       >
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium truncate flex-1">{task.title}</p>
-                          <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                          <p className="text-xs font-medium truncate flex-1">{task.title}</p>
+                          <span className={`text-[10px] px-1 py-0.5 rounded font-medium ${
                             task.priority === 'high' ? 'bg-red-500 text-white' :
                             task.priority === 'medium' ? 'bg-amber-500 text-white' : 'bg-slate-500 text-white'
                           }`}>{task.priority}</span>
                         </div>
-                        <p className={`text-xs mt-1 ${isOverdue ? 'text-red-600' : isDueToday ? 'text-orange-600' : 'text-muted-foreground'}`}>
+                        <p className={`text-[10px] ${isOverdue ? 'text-red-600' : isDueToday ? 'text-orange-600' : 'text-muted-foreground'}`}>
                           {isOverdue ? 'OVERDUE - ' : isDueToday ? 'Due Today - ' : ''}
                           {task.due_date ? format(new Date(task.due_date), 'MMM d') : 'No date'}
                         </p>
