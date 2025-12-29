@@ -375,9 +375,9 @@ const UserDashboard = () => {
       return {
         total: leads.length,
         new: leads.filter(l => l.lead_status === 'New').length,
-        contacted: leads.filter(l => l.lead_status === 'Contacted').length,
+        attempted: leads.filter(l => l.lead_status === 'Attempted').length,
+        followUp: leads.filter(l => l.lead_status === 'Follow-up').length,
         qualified: leads.filter(l => l.lead_status === 'Qualified').length,
-        converted: leads.filter(l => l.lead_status === 'Converted').length,
         recentLead: recentLead?.lead_name || null
       };
     },
@@ -760,21 +760,42 @@ const UserDashboard = () => {
     switch (key) {
       case "leads":
         return (
-          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer animate-fade-in" onClick={() => !isResizeMode && navigate('/leads')}>
+          <Card className="h-full hover:shadow-lg transition-shadow animate-fade-in">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">My Leads</CardTitle>
               <FileText className="w-4 h-4 text-blue-600" />
             </CardHeader>
             <CardContent className="space-y-2">
-              <div className="text-2xl font-bold">{leadsData?.total || 0}</div>
-              <div className="flex flex-wrap gap-1 text-xs">
-                <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{leadsData?.new || 0} New</span>
-                <span className="px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">{leadsData?.contacted || 0} Contacted</span>
-                <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">{leadsData?.qualified || 0} Qualified</span>
+              <div className="grid grid-cols-2 gap-2">
+                <div 
+                  className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors"
+                  onClick={(e) => { e.stopPropagation(); navigate('/leads?status=New'); }}
+                >
+                  <p className="text-xl font-bold text-blue-600">{leadsData?.new || 0}</p>
+                  <p className="text-xs text-muted-foreground">New</p>
+                </div>
+                <div 
+                  className="text-center p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-950/40 transition-colors"
+                  onClick={(e) => { e.stopPropagation(); navigate('/leads?status=Attempted'); }}
+                >
+                  <p className="text-xl font-bold text-yellow-600">{leadsData?.attempted || 0}</p>
+                  <p className="text-xs text-muted-foreground">Attempted</p>
+                </div>
+                <div 
+                  className="text-center p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-950/40 transition-colors"
+                  onClick={(e) => { e.stopPropagation(); navigate('/leads?status=Follow-up'); }}
+                >
+                  <p className="text-xl font-bold text-orange-600">{leadsData?.followUp || 0}</p>
+                  <p className="text-xs text-muted-foreground">Follow-Up</p>
+                </div>
+                <div 
+                  className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
+                  onClick={(e) => { e.stopPropagation(); navigate('/leads?status=Qualified'); }}
+                >
+                  <p className="text-xl font-bold text-green-600">{leadsData?.qualified || 0}</p>
+                  <p className="text-xs text-muted-foreground">Qualified</p>
+                </div>
               </div>
-              {leadsData?.recentLead && (
-                <p className="text-xs text-muted-foreground truncate">Latest: {leadsData.recentLead}</p>
-              )}
             </CardContent>
           </Card>
         );
@@ -1144,21 +1165,33 @@ const UserDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
-                <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                <div 
+                  className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors"
+                  onClick={() => navigate('/leads?status=New')}
+                >
                   <p className="text-xl font-bold text-blue-600">{leadsData?.new || 0}</p>
                   <p className="text-xs text-muted-foreground">New</p>
                 </div>
-                <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
-                  <p className="text-xl font-bold text-yellow-600">{leadsData?.contacted || 0}</p>
-                  <p className="text-xs text-muted-foreground">Contacted</p>
+                <div 
+                  className="text-center p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-950/40 transition-colors"
+                  onClick={() => navigate('/leads?status=Attempted')}
+                >
+                  <p className="text-xl font-bold text-yellow-600">{leadsData?.attempted || 0}</p>
+                  <p className="text-xs text-muted-foreground">Attempted</p>
                 </div>
-                <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                <div 
+                  className="text-center p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-950/40 transition-colors"
+                  onClick={() => navigate('/leads?status=Follow-up')}
+                >
+                  <p className="text-xl font-bold text-orange-600">{leadsData?.followUp || 0}</p>
+                  <p className="text-xs text-muted-foreground">Follow-Up</p>
+                </div>
+                <div 
+                  className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg cursor-pointer hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
+                  onClick={() => navigate('/leads?status=Qualified')}
+                >
                   <p className="text-xl font-bold text-green-600">{leadsData?.qualified || 0}</p>
                   <p className="text-xs text-muted-foreground">Qualified</p>
-                </div>
-                <div className="text-center p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
-                  <p className="text-xl font-bold text-purple-600">{leadsData?.converted || 0}</p>
-                  <p className="text-xs text-muted-foreground">Converted</p>
                 </div>
               </div>
             </CardContent>
