@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom";
 
 const Leads = () => {
   const [searchParams] = useSearchParams();
-  const initialStatus = searchParams.get('status') || 'New';
+  const initialStatus = searchParams.get('status') || 'all';
   const { toast } = useToast();
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
   const [showModal, setShowModal] = useState(false);

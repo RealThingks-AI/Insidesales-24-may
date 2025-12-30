@@ -122,13 +122,13 @@ const LeadTable = forwardRef<LeadTableRef, LeadTableProps>(({
   setShowModal,
   selectedLeads,
   setSelectedLeads,
-  initialStatus = "New",
+  initialStatus = "all",
   onBulkDeleteComplete
 }, ref) => {
   const { toast } = useToast();
   const { logDelete, logBulkDelete } = useCRUDAudit();
   const { userRole } = useUserRole();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -473,6 +473,7 @@ const LeadTable = forwardRef<LeadTableRef, LeadTableProps>(({
     setOwnerFilter("all");
     setDateFromFilter(null);
     setDateToFilter(null);
+    setSearchParams({});
   };
 
   const handleConvertToDeal = (lead: Lead) => {
