@@ -1906,6 +1906,39 @@ export type Database = {
         }
         Relationships: []
       }
+      task_reminder_logs: {
+        Row: {
+          created_at: string | null
+          email_sent_to: string | null
+          id: string
+          overdue_count: number | null
+          sent_at: string | null
+          sent_date: string
+          tasks_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_sent_to?: string | null
+          id?: string
+          overdue_count?: number | null
+          sent_at?: string | null
+          sent_date: string
+          tasks_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_sent_to?: string | null
+          id?: string
+          overdue_count?: number | null
+          sent_at?: string | null
+          sent_date?: string
+          tasks_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       task_subtasks: {
         Row: {
           created_at: string
@@ -2265,6 +2298,7 @@ export type Database = {
       is_current_user_admin: { Args: never; Returns: boolean }
       is_current_user_admin_by_metadata: { Args: never; Returns: boolean }
       is_user_admin: { Args: { user_id?: string }; Returns: boolean }
+      is_user_manager: { Args: { user_id?: string }; Returns: boolean }
       log_data_access: {
         Args: {
           p_operation: string

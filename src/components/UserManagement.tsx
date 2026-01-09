@@ -41,8 +41,8 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<string>('created_at');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [sortField, setSortField] = useState<string>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const {
     toast
   } = useToast();
@@ -234,9 +234,9 @@ const UserManagement = () => {
       case 'admin':
         return 'Admin';
       case 'manager':
-        return 'Management';
+        return 'Manager';
       default:
-        return 'Employee';
+        return 'User';
     }
   }, []);
   const handleSort = (field: string) => {
