@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense, useEffect } from 'react';
-import { Users, Lock, Database, Shield, Activity, FileText, Megaphone, Palette } from 'lucide-react';
+import { Users, Lock, Database, Shield, Activity, FileText, Megaphone, Palette, History } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -21,6 +21,7 @@ const adminTabs = [
   { id: 'users', label: 'Users', icon: Users },
   { id: 'access', label: 'Access', icon: Lock },
   { id: 'config', label: 'Config', icon: Settings2 },
+  { id: 'logs', label: 'Logs', icon: History },
   { id: 'system', label: 'System', icon: Activity },
   { id: 'reports', label: 'Reports', icon: BarChart3 }
 ];
@@ -38,8 +39,8 @@ const AdminSettingsPage = ({ defaultSection }: AdminSettingsPageProps) => {
       'users': 'users',
       'page-access': 'access',
       'branding': 'config',
+      'audit-logs': 'logs',
       'backup': 'system',
-      'audit-logs': 'system',
       'system-status': 'system',
       'scheduled-reports': 'reports',
       'announcements': 'reports'
@@ -85,7 +86,7 @@ const AdminSettingsPage = ({ defaultSection }: AdminSettingsPageProps) => {
   return (
     <div className="space-y-6 max-w-6xl">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 max-w-xl">
+        <TabsList className="grid w-full grid-cols-6 max-w-2xl">
           {adminTabs.map(tab => {
             const Icon = tab.icon;
             return (
@@ -121,16 +122,16 @@ const AdminSettingsPage = ({ defaultSection }: AdminSettingsPageProps) => {
           </SettingsCard>
         </TabsContent>
 
+        <TabsContent value="logs" className="mt-6 space-y-6">
+          <Suspense fallback={<SettingsLoadingSkeleton />}>
+            <AuditLogsSettings />
+          </Suspense>
+        </TabsContent>
+
         <TabsContent value="system" className="mt-6 space-y-6">
           <SettingsCard icon={Database} title="Data Backup & Restore" description="Export data and manage backups">
             <Suspense fallback={<SettingsLoadingSkeleton />}>
               <BackupRestoreSettings />
-            </Suspense>
-          </SettingsCard>
-
-          <SettingsCard icon={Shield} title="Audit Logs" description="View system activity and security events">
-            <Suspense fallback={<SettingsLoadingSkeleton />}>
-              <AuditLogsSettings />
             </Suspense>
           </SettingsCard>
 
